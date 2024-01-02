@@ -62,36 +62,6 @@ app.delete("/users/:id", async (req, res) => {
     res.status(200).json("User deleted");
 });
 
-//COMMENTS
-// READ
-app.get("/comments", async(req,res) => {
-    await db.query("SELECT * FROM comment");
-        res.status(200).json("Comments");
-});
-
-// CREATE
-app.post("/add-comment", async (req, res) => {
-    await db.query(`INSERT INTO comment (content)
-                    VALUES ('${req.body.content}')`);
-    res.status(200).json("Commentaire ajouté");
-});
-
-// UPDATE
-app.put("/comments/:id", async (req, res) => {
-    const id = req.params.id;
-    const content = req.body.content;
-    
-    await db.query(`UPDATE comment SET content="${content}" WHERE id=${id}`);
-    res.status(200).json("Commentaire modifié");
-});
-
-// DELETE
-app.delete("/comments/:id", async (req, res) => {
-    const id = req.params.id;
-    await db.query(`DELETE FROM comment WHERE id=${id}`);
-    res.status(200).json("Commentaire supprimé");
-});
-
 
 //COMMENTS
 app.get("/comments", async(req,res) => {
@@ -127,7 +97,21 @@ app.post("/add-comment", async (req, res) => {
     res.status(200).json("Commentaire ajouté");
 });
 
+// UPDATE
+app.put("/comments/:id", async (req, res) => {
+    const id = req.params.id;
+    const content = req.body.content;
+    
+    await db.query(`UPDATE comment SET content="${content}" WHERE id=${id}`);
+    res.status(200).json("Commentaire modifié");
+});
 
+// DELETE
+app.delete("/comments/:id", async (req, res) => {
+    const id = req.params.id;
+    await db.query(`DELETE FROM comment WHERE id=${id}`);
+    res.status(200).json("Commentaire supprimé");
+});
 
 
 app.listen(8000, function () {
