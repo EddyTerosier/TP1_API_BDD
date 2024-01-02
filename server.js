@@ -109,9 +109,9 @@ app.get("/comments/before/:date", async (req, res) => {
         res.status(200).json(rows);
     } catch (err) {
         console.log(err);
-        res.status(500).json({ error: 'Erreur lors de la récupération des commentaires' });
+        res.status(500).json({error: 'Erreur lors de la récupération des commentaires'});
     }
-
+});
 // UPDATE
 app.put("/comments/:id", async (req, res) => {
     const id = req.params.id;
