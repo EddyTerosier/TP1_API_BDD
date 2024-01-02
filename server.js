@@ -92,10 +92,25 @@ app.get("/comments/user/:userId", async (req, res) => {
 });
 
 app.post("/add-comment", async (req, res) => {
+    try {
     await db.query(`INSERT INTO comment (content)
                     VALUES ('${req.body.content}')`);
     res.status(200).json("Commentaire ajouté");
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ error: 'Erreur lors de la création du commentaire' });
+    }
 });
+
+app.get("/comments/before/:date", async (req, res) => {
+    const date = req.params.date;
+    try {
+        const [rows] = await db.query("SELECT * FROM comment WHERE creation_date_comment < ?", [date]);
+        res.status(200).json(rows);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Erreur lors de la récupération des commentaires' });
+    }
 
 // UPDATE
 app.put("/comments/:id", async (req, res) => {
