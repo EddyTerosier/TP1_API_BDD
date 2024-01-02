@@ -74,6 +74,21 @@ app.post("/add-comment", async (req, res) => {
     res.status(200).json("Commentaire ajouté");
 });
 
+// UPDATE
+app.put("/comments/:id", async (req, res) => {
+    const id = req.params.id;
+    const content = req.body.content;
+    
+    await db.query(`UPDATE comment SET content="${content}" WHERE id=${id}`);
+    res.status(200).json("Commentaire modifié");
+});
+
+// DELETE
+app.delete("/comments/:id", async (req, res) => {
+    const id = req.params.id;
+    await db.query(`DELETE FROM comment WHERE id=${id}`);
+    res.status(200).json("Commentaire supprimé");
+});
 
 
 app.listen(8000, (req, res) => console.log("Server is running on port 8000"));
