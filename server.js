@@ -36,12 +36,12 @@ app.get("/users/:id", async (req, res) => {
 
 // CREATE
 app.post("/users", async (req, res) => {
-    const lastname = req.body.lastname;
-    const firstname = req.body.firstname;
-    const email = req.body.email;
+  const lastname = req.body.lastname;
+  const firstname = req.body.firstname;
+  const email = req.body.email;
 
-    await db.query(`INSERT INTO user (lastname, firstname, email) VALUES ("${lastname}", "${firstname}", "${email}")`);
-    res.status(200).json("User added");
+  await db.query(`INSERT INTO user (lastname, firstname, email) VALUES ("${lastname}", "${firstname}", "${email}")`);
+  res.status(200).json("User added");
 });
 
 // UPDATE
@@ -50,7 +50,7 @@ app.put("/users/:id", async (req, res) => {
     const lastname = req.body.lastname;
     const firstname = req.body.firstname;
     const email = req.body.email;
-
+  
     await db.query(`UPDATE user SET lastname="${lastname}", firstname="${firstname}", email="${email}" WHERE id=${id}`);
     res.status(200).json("User updated");
 });
@@ -103,3 +103,4 @@ app.post("/add-comment", async (req, res) => {
 app.listen(8000, function () {
     console.log("Server listening on port 8000");
 });
+
