@@ -10,21 +10,24 @@ app.use(cors());
 
 // ROUTES
 
-app.get("/", (req, res) => {
-  res.status(200, { "cotent-Type": "text/html; charset=UTF-8" }).send("<h1>Home</h1>");
-});
+//HOME
+app.get("/", (req,res) => {
+    res.status(200, {"cotent-Type": "text/html; charset=UTF-8"}).send("<h1>Home</h1>");
+})
 
+//USERS
+// USERS CRUD
 // USERS CRUD
 // READ
 app.get("/users", async (req, res) => {
     try {
-      const [rows] = await db.query("SELECT * FROM user");
-      res.status(200).json(rows);
+        const [rows] = await db.query("SELECT * FROM user");
+        res.status(200).json(rows);
     } catch (err) {
-      console.log(err);
-      res.status(500).json({ error: 'Une erreur est survenue lors de la récupération des utilisateurs' });
+        console.log(err);
+        res.status(500).json({ error: 'Une erreur est survenue lors de la récupération des utilisateurs' });
     }
-  });
+});
 
 app.get("/users/:id", async (req, res) => {
     const id = req.params.id;
@@ -48,7 +51,7 @@ app.put("/users/:id", async (req, res) => {
     const lastname = req.body.lastname;
     const firstname = req.body.firstname;
     const email = req.body.email;
-    
+  
     await db.query(`UPDATE user SET lastname="${lastname}", firstname="${firstname}", email="${email}" WHERE id=${id}`);
     res.status(200).json("User updated");
 });
@@ -91,4 +94,44 @@ app.delete("/comments/:id", async (req, res) => {
 });
 
 
-app.listen(8000, (req, res) => console.log("Server is running on port 8000"));
+//COMMENTS
+app.get("/comments", async(req,res) => {
+    await db.query("SELECT * FROM comment");
+        res.status(200).json("Comments");
+});
+
+app.get("/comments/technology/:technologyId", async (req, res) => {
+    const technologyId = req.params.technology_id;
+    try {
+        const [rows] = await db.query("SELECT * FROM comment WHERE technology_id = ?", [technologyId]);
+        res.status(200).json(rows);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Erreur lors de la récupération des commentaires' });
+    }
+});
+
+app.get("/comments/user/:userId", async (req, res) => {
+    const userId = req.params.user_id;
+    try {
+        const [rows] = await db.query("SELECT * FROM comment WHERE user_id = ?", [userId]);
+        res.status(200).json(rows);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Erreur lors de la récupération des messages' });
+    }
+});
+
+app.post("/add-comment", async (req, res) => {
+    await db.query(`INSERT INTO comment (content)
+                    VALUES ('${req.body.content}')`);
+    res.status(200).json("Commentaire ajouté");
+});
+
+
+
+
+app.listen(8000, function () {
+    console.log("Server listening on port 8000");
+});
+
