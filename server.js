@@ -15,8 +15,7 @@ app.get("/", (req,res) => {
     res.status(200, {"cotent-Type": "text/html; charset=UTF-8"}).send("<h1>Home</h1>");
 })
 
-//USERS
-// USERS CRUD
+
 // USERS CRUD
 // READ
 app.get("/users", async (req, res) => {
