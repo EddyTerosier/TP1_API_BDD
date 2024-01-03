@@ -37,7 +37,6 @@ exports.getCommentsByTechnology = async (req, res) => {
 
 exports.getAllCommentsBeforeDate = async (req, res) => {
     const date = req.params.date;
-    console.log(date);
     try {
         const result = await db.query("SELECT * FROM comment WHERE creation_date_comment < ?", [date]);
         res.status(200).json(result[0]);
