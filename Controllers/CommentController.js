@@ -1,4 +1,4 @@
-const db = require("../database/database");
+const db = require("../Database/database");
 
 //GET ALL
 exports.getAllComments = async (req, res) => {

@@ -15,7 +15,7 @@ app.use(cors());
 // ROUTES
 app.use("/users", userRoute);
 app.use('/comments', commentRoute);
-// app.use("/technology", technologyRoute);
+app.use("/technologies", technologyRoute);
 
 // SERVER
 app.listen(8000, function () {
