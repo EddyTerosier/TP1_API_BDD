@@ -1,4 +1,4 @@
-const db = require("../database/database");
+const db = require("../Database/database");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -49,7 +49,8 @@ exports.removeUser = async (req, res) => {
 
 exports.register = async (req, res) => {
     //verifier l'email de l'utilisateur
-    const {email, password} = req.body;
+    const {lastname, firstname, email, password} = req.body;
+    const role = req.body.role ? req.body.role : 'user';
     const result = await db.query(`SELECT *
                                    FROM user
                                    WHERE email = ?`, [email]);
@@ -60,7 +61,7 @@ exports.register = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
 
     // envoyer les données dans la base de données (ave le mot de passe hashé)
-    await db.query('INSERT INTO user (email, password, role) VALUES (?, ?, ?)', [email, hashPassword, "user"]);
+    await db.query('INSERT INTO user (lastname, firstname, email, password, role) VALUES (?, ?, ?, ?, ?)', [lastname, firstname, email, hashPassword, role]);
 
     // utilisation de jwt token pour la signature
     const token = jwt.sign({email}, process.env.SECRET_KEY, {expiresIn: '24h'})
