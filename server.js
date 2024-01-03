@@ -3,6 +3,8 @@ const express = require("express");
 const app = express();
 const db = require("./database");
 const cors = require("cors");
+const bcrypt = require('bcrypt');
+
 
 // Middleware
 app.use(express.json());
@@ -128,8 +130,58 @@ app.delete("/comments/:id", async (req, res) => {
     res.status(200).json("Commentaire supprimé");
 });
 
+// REGISTER
+app.post("/register", async (req, res) => {
+    try {
+        // Génère le sel pour le hachage
+        // C'est une chaîne de caractères générée aléatoirement qui est utilisée en conjonction avec le mot de passe lors du processus de hachage
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+
+        // Hache le mot de passe
+        // Le sel est automatiquement ajouté au mot de passe haché
+        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+        // Insère l'utilisateur dans la base de données avec le mot de passe haché
+        const [rows] = await db.query(`
+            INSERT INTO user (lastname, firstname, email, password)
+            VALUES ('${req.body.lastname}', '${req.body.firstname}', '${req.body.email}', '${hashedPassword}')
+        `);
+
+        res.status(200).json("Inscription réussie");
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Erreur lors de la création de l\'utilisateur' });
+    }
+});
+
+// LOGIN
+app.post("/login", async (req, res) => {
+    try {
+        // Récupère l'utilisateur
+        const [rows] = await db.query(`SELECT * FROM user WHERE email = '${req.body.email}'`);
+
+        // Vérifie si l'utilisateur existe
+        if (rows.length === 0) {
+            res.status(401).json({ error: "L'utilisateur n'existe pas" });
+            return;
+        }
+
+        // Compare le mot de passe avec le mot de passe haché
+        const match = await bcrypt.compare(req.body.password, rows[0].password);
+
+        if (!match) {
+            res.status(401).json({ error: "Mot de passe incorrect" });
+            return;
+        }
+
+        res.status(200).json("Connexion réussie");
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Erreur lors de la connexion" });
+    }
+});
 
 app.listen(8000, function () {
     console.log("Server listening on port 8000");
 });
-
