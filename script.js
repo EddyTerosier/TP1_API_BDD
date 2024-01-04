@@ -42,14 +42,38 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Stockage du token dans le local storage
-const response = await fetch("http://localhost:8000/users/login", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-    },
+async function loginUser(email, password) {
+    try {
+        const response = await fetch("http://localhost:8000/users/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({email, password}) // Les données de connexion
+        });
+
+        if (!response.ok) {
+            console.error("Erreur de connexion : ", response.status, response.statusText);
+            return;
+        }
+
+        const data = await response.json();
+        console.log("Connexion réussie, token reçu: ", data.token);
+        localStorage.setItem('token', data.token); // Stockage du token dans localStorage
+
+    } catch (error) {
+        console.error("Erreur lors de la connexion", error);
+    }
+}
+
+document.getElementById('loginForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    await loginUser(email, password);
 });
-console.log(response);
-// localStorage.setItem('token', response.token);
 
 
 
