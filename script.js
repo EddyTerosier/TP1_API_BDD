@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 async function loadRegister() {
-    const response = await fetch("http://localhost:8000/register", {
+    const response = await fetch("http://localhost:8000/users/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

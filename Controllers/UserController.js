@@ -1,4 +1,4 @@
-const db = require("../Database/database");
+const db = require("../database/database");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -49,8 +49,7 @@ exports.removeUser = async (req, res) => {
 
 exports.register = async (req, res) => {
     //verifier l'email de l'utilisateur
-    const {lastname, firstname, email, password} = req.body;
-    const role = req.body.role ? req.body.role : 'user';
+    const {email, password} = req.body;
     const result = await db.query(`SELECT *
                                    FROM user
                                    WHERE email = ?`, [email]);
@@ -61,7 +60,7 @@ exports.register = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
 
     // envoyer les données dans la base de données (ave le mot de passe hashé)
-    await db.query('INSERT INTO user (lastname, firstname, email, password, role) VALUES (?, ?, ?, ?, ?)', [lastname, firstname, email, hashPassword, role]);
+    await db.query('INSERT INTO user (email, password, role) VALUES (?, ?, ?)', [email, hashPassword, "user"]);
 
     // utilisation de jwt token pour la signature
     const token = jwt.sign({email}, process.env.SECRET_KEY, {expiresIn: '24h'})
@@ -78,6 +77,7 @@ exports.login = async (req, res) => {
         return res.status(400).json({error: "Email ou mot de passe incorrect"});
     }
     const user = result[0][0];
+    console.log(req.body);
 
     // comparer le mot de passe avec celui de la base de données avec bcrypt
     const samePassword = await bcrypt.compare(password, user.password);
