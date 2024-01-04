@@ -68,24 +68,32 @@ exports.register = async (req, res) => {
 
 }
 exports.login = async (req, res) => {
-    // verifier l'email de l'utilisateur & le mot de passe
-    const {email, password} = req.body;
-    const result = await db.query(`SELECT *
-                                   FROM user
-                                   WHERE email = ?`, [email]);
-    if (result.length[0] === 0) {
-        return res.status(400).json({error: "Email ou mot de passe incorrect"});
+    try {
+        // verifier l'email de l'utilisateur & le mot de passe
+        const {email, password} = req.body;
+        const result = await db.query(`SELECT *
+                                       FROM user
+                                       WHERE email = ?`, [email]);
+        if (result.length[0] === 0) {
+            return res.status(400).json({error: "Email ou mot de passe incorrect"});
+        }
+        const user = result[0][0];
+
+        // comparer le mot de passe avec celui de la base de données avec bcrypt
+        const samePassword = await bcrypt.compare(password, user.password);
+        if (!samePassword) {
+            return res.status(400).json({error: "Email ou mot de passe incorrect"});
+        }
+
+        // si tout est ok, on utilise jwt token pour la signature
+        const token = jwt.sign({email}, process.env.SECRET_KEY, {expiresIn: '24h'});
+
+        // Stocker le token dans un cookie pdt 24h
+        res.cookie('token', token, { httpOnly: true, maxAge: 86400000 });
+
+        res.json({token});
+    } catch (error) {
+        console.error("Erreur lors de la connexion", error);
+        res.status(500).json({error: "Une erreur est survenue lors de la connexion"});
     }
-    const user = result[0][0];
-
-    // comparer le mot de passe avec celui de la base de données avec bcrypt
-    const samePassword = await bcrypt.compare(password, user.password);
-    if (!samePassword) {
-        return res.status(400).json({error: "Email ou mot de passe incorrect"});
-    }
-
-    // si tout est ok, on utilise jwt token pour la signature
-    const token = jwt.sign({email}, process.env.SECRET_KEY, {expiresIn: '24h'})
-    res.json({token});
-
-}
+};
