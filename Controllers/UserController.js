@@ -77,7 +77,6 @@ exports.login = async (req, res) => {
         return res.status(400).json({error: "Email ou mot de passe incorrect"});
     }
     const user = result[0][0];
-    console.log(req.body);
 
     // comparer le mot de passe avec celui de la base de données avec bcrypt
     const samePassword = await bcrypt.compare(password, user.password);

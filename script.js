@@ -41,12 +41,16 @@ document.addEventListener("DOMContentLoaded", function () {
     loadUsers();
 });
 
-async function loadRegister() {
-    const response = await fetch("http://localhost:8000/users/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-}
-  
+//Stockage du token dans le local storage
+const response = await fetch("http://localhost:8000/users/login", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
+console.log(response);
+// localStorage.setItem('token', response.token);
+
+
+
+
